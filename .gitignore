@@ -1,0 +1,4 @@
+*.pyc
+darknet_ros/darknet/
+.catkin_tools
+.vscode
