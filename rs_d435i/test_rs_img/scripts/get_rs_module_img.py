@@ -15,13 +15,10 @@ if __name__ == '__main__':
         listener.display_mode = 'depth'
         
         if(listener.display_mode == 'rgb')and(type(listener.cv_image) is np.ndarray):
-            print("rgb")
             cv2.imshow("rgb module image", listener.cv_image)
         elif(listener.display_mode == 'depth')and(type(listener.cv_depth) is np.ndarray): 
-            print("depth")
             if(type(listener.cv_image) is np.ndarray):
                 cv2.imshow("rgb module image", listener.cv_image)
-                print(("111111"))
                 img_color = np.asanyarray(listener.cv_image)  # 把图像像素转化为数组
                 img_depth = np.asanyarray(listener.cv_depth)  # 把图像像素转化为数组
                 cv2.circle(img_color, (300, 250), 8, [255, 0, 255], thickness=-1)
