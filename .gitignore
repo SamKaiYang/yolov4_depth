@@ -2,3 +2,5 @@
 darknet_ros/darknet/
 .catkin_tools
 .vscode
+CMakeLists.txt
+realsense-ros
