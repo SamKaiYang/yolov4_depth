@@ -29,6 +29,8 @@ obj_num = 0
 center_x = 0
 center_y = 0
 person_distance = 0
+time_cnt = 0
+Depth_level = 0
 Depth_level = depth_alert()
 
 class bounding_boxes():
@@ -98,13 +100,24 @@ def Yolo_callback(data):
             person_detect_flag = False
 
 def alert_level_cal():
-    global person_distance
+    global person_distance ,time_cnt,Depth_level
     print("Distance: %d mm"%person_distance)
     if person_distance < 1000:
         Depth_level = 1
+        time_cnt = time_cnt+1
+    
     else:
         Depth_level = 0
+        time_cnt = 0
+    
+    if time_cnt > 150 and person_distance < 1000:
+        Depth_level = 2
     pub_alert.publish(Depth_level)
+
+def thread_time_cal():
+    if Depth_level == 1:
+        pass
+
 
 if __name__ == '__main__':
     #global boxes
