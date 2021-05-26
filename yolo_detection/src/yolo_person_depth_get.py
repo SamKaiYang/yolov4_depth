@@ -17,6 +17,7 @@ from darknet_ros_msgs.msg import BoundingBox
 from darknet_ros_msgs.msg import BoundingBoxes
 from yolo_detection.msg import ROI_array
 from yolo_detection.msg import ROI
+from yolo_detection.msg import depth_alert
 import time
 #import cv2
 from std_msgs.msg import String
@@ -27,6 +28,9 @@ from std_msgs.msg import Int32MultiArray
 obj_num = 0
 center_x = 0
 center_y = 0
+person_distance = 0
+Depth_level = depth_alert()
+
 class bounding_boxes():
     def __init__(self,probability,xmin,ymin,xmax,ymax,id_name,Class_name):
         self.probability = probability
@@ -41,7 +45,7 @@ class bounding_boxes():
 # YOLO V4 輸入
 i = 0
 def Yolo_callback(data):
-    global obj_num,center_x,center_y
+    global obj_num,center_x,center_y,Depth_level,person_distance
 
     person_detect_flag = False
     boxes = bounding_boxes(0,0,0,0,0,0,0)
@@ -84,7 +88,8 @@ def Yolo_callback(data):
                     if center_x != None and center_y != None:
                         cv2.circle(img_color, (round(center_x), round(center_y)), 8, [255, 0, 255], thickness=-1)
                         # cv2.putText(img_color, "Distance/mm:"+str(img_depth[round(center_x), round(center_y)]), (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, [255, 0, 255])
-                        print("Distance/mm:"+str(img_depth[round(center_y), round(center_x)]))
+                        person_distance = img_depth[round(center_y), round(center_x)]
+                        
             else:
                 center_x = None
                 center_y = None
@@ -92,7 +97,14 @@ def Yolo_callback(data):
             pub.publish(ROIarray)
             person_detect_flag = False
 
-
+def alert_level_cal():
+    global person_distance
+    print("Distance: %d mm"%person_distance)
+    if person_distance < 1000:
+        Depth_level = 1
+    else:
+        Depth_level = 0
+    pub_alert.publish(Depth_level)
 
 if __name__ == '__main__':
     #global boxes
@@ -102,9 +114,10 @@ if __name__ == '__main__':
     rate = rospy.Rate(10) # 10hz
     rospy.Subscriber("/darknet_ros/bounding_boxes",BoundingBoxes,Yolo_callback)
     pub = rospy.Publisher("obj_position", ROI_array, queue_size=10)
+    pub_alert = rospy.Publisher("alert_level", depth_alert, queue_size=10)
     while not rospy.is_shutdown():
         listener.display_mode = 'depth'
-
+        alert_level_cal()
         cv2.waitKey(1)
 
         os.system("clear")
