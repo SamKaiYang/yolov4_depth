@@ -11,5 +11,5 @@
     </include>
 
     <!--<node name="get_image" pkg="get_rs_image" type="Get_Image.py"  /> -->
-    <node name="yolo_boundingboxes" pkg="yolo_detection" type="yolo_depth_get.py"  output="screen" />  <!--output="screen"-->
+    <node name="yolo_boundingboxes" pkg="yolo_detection" type="yolo_person_depth_get.py"  output="screen" />  <!--output="screen"-->
 </launch>

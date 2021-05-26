@@ -59,11 +59,18 @@ roslaunch darknet_ros yolo_v4_tiny.launch
 ## 讀取距離資訊
 1.use pyrealsense
 ```bash
+roslaunch realsense2_camera rs_rgbd.launch
 rosrun get_rs_image Get_depth.py 
 ```
 2.use realsense ros
 ```bash
+roslaunch realsense2_camera rs_rgbd.launch
 rosrun test_rs_img get_rs_module_img.py 
+```
+## 讀取人的距離資訊
+```bash
+roslaunch realsense2_camera rs_rgbd.launch
+roslaunch yolo_detection yolo_get_person_depth.launch 
 ```
 
 >>2021/05/20 更新
