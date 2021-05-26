@@ -21,8 +21,8 @@ if __name__ == '__main__':
                 cv2.imshow("rgb module image", listener.cv_image)
                 img_color = np.asanyarray(listener.cv_image)  # 把图像像素转化为数组
                 img_depth = np.asanyarray(listener.cv_depth)  # 把图像像素转化为数组
-                cv2.circle(img_color, (300, 250), 8, [255, 0, 255], thickness=-1)
-                cv2.putText(img_color, "Distance/mm:"+str(img_depth[300, 250]), (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, [255, 0, 255])
+                cv2.circle(img_color, (640, 360), 8, [255, 0, 255], thickness=-1)
+                cv2.putText(img_color, "Distance/mm:"+str(img_depth[640, 360]), (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, [255, 0, 255])
         else:
             pass
 
