@@ -22,8 +22,9 @@ import time
 #import cv2
 from std_msgs.msg import String
 from std_msgs.msg import Int32MultiArray
-
-
+# 子執行序工作函數
+import threading
+import time
 
 obj_num = 0
 center_x = 0
@@ -32,6 +33,7 @@ person_distance = 0
 time_cnt = 0
 Depth_level = 0
 Depth_level = depth_alert()
+alert_flag = False
 
 class bounding_boxes():
     def __init__(self,probability,xmin,ymin,xmax,ymax,id_name,Class_name):
@@ -100,23 +102,32 @@ def Yolo_callback(data):
             person_detect_flag = False
 
 def alert_level_cal():
-    global person_distance ,time_cnt,Depth_level
+    global person_distance, alert_flag, Depth_level
     print("Distance: %d mm"%person_distance)
-    if person_distance < 1000:
+    if person_distance < 1000 and alert_flag == False:
         Depth_level = 1
-        time_cnt = time_cnt+1
-    
-    else:
-        Depth_level = 0
-        time_cnt = 0
-    
-    if time_cnt > 150 and person_distance < 1000:
+    elif person_distance < 1000 and alert_flag == True:
         Depth_level = 2
+    else :
+        Depth_level = 0
+
     pub_alert.publish(Depth_level)
 
 def thread_time_cal():
-    if Depth_level == 1:
-        pass
+    global Depth_level, alert_flag, person_distance
+    count = 0
+    while True: 
+        if person_distance < 1000 and count < 3:
+            count += 1
+            alert_flag = False
+            time.sleep(1)
+        elif person_distance < 1000 and count == 3:
+            alert_flag = True
+        elif person_distance >= 1000:
+            count = 0
+            alert_flag = False
+
+
 
 
 if __name__ == '__main__':
@@ -128,6 +139,10 @@ if __name__ == '__main__':
     rospy.Subscriber("/darknet_ros/bounding_boxes",BoundingBoxes,Yolo_callback)
     pub = rospy.Publisher("obj_position", ROI_array, queue_size=10)
     pub_alert = rospy.Publisher("alert_level", depth_alert, queue_size=10)
+    # 建立一個子執行緒
+    t = threading.Thread(target = thread_time_cal)
+    # 執行該子執行緒
+    t.start()
     while not rospy.is_shutdown():
         listener.display_mode = 'depth'
         alert_level_cal()
@@ -136,3 +151,5 @@ if __name__ == '__main__':
         os.system("clear")
         rate.sleep()
     rospy.spin()
+    # 等待 t 這個子執行緒結束
+    t.join()
