@@ -117,16 +117,20 @@ def thread_time_cal():
     global Depth_level, alert_flag, person_distance
     count = 0
     while True: 
-        if person_distance < 1000 and count < 3:
-            count += 1
-            alert_flag = False
-            time.sleep(1)
-        elif person_distance < 1000 and count == 3:
-            alert_flag = True
-        elif person_distance >= 1000:
-            count = 0
-            alert_flag = False
-
+        try:
+            if person_distance < 1000 and count < 3:
+                count += 1
+                alert_flag = False
+                time.sleep(1)
+            elif person_distance < 1000 and count == 3:
+                alert_flag = True
+            elif person_distance >= 1000:
+                count = 0
+                alert_flag = False
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+        except:
+            print("程式出現其它異常")
 
 
 
@@ -150,6 +154,7 @@ if __name__ == '__main__':
 
         os.system("clear")
         rate.sleep()
-    rospy.spin()
     # 等待 t 這個子執行緒結束
     t.join()
+    rospy.spin()
+    
